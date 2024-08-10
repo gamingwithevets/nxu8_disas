@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <math.h>
 #include <stdlib.h>
 #include <stdint.h>
 #include <string.h>
@@ -8,9 +9,9 @@
 
 struct nxu8_instr_mask instrs[] = {
 	{0x8001, 0x0f00, 0x08, 0x00f0, 0x04, "ADD R%0d, R%1d",          NULL},
-	{0x1000, 0x0f00, 0x08, 0x00ff, 0x00, "ADD R%0d, #%1hH",          NULL},
+	{0x1000, 0x0f00, 0x08, 0x00ff, 0x00, "ADD R%0d, #%1sH",          NULL},
 	{0xf006, 0x0e00, 0x08, 0x00e0, 0x04, "ADD ER%0d, ER%1d",        NULL},
-	{0xe080, 0x0e00, 0x08, 0x007f, 0x00, "ADD ER%0d, #%1hH",         NULL},
+	{0xe080, 0x0e00, 0x08, 0x007f, 0x00, "ADD ER%0d, #%1sH",         NULL},
 	{0x8006, 0x0f00, 0x08, 0x00f0, 0x04, "ADDC R%0d, R%1d",         NULL},
 	{0x6000, 0x0f00, 0x08, 0x00ff, 0x00, "ADDC R%0d, %1sH",         NULL},
 	{0x8002, 0x0f00, 0x08, 0x00f0, 0x04, "AND R%0d, R%1d",          NULL},
@@ -20,7 +21,7 @@ struct nxu8_instr_mask instrs[] = {
 	{0x8005, 0x0f00, 0x08, 0x00f0, 0x04, "CMPC R%0d, R%1d",         NULL},
 	{0x5000, 0x0f00, 0x08, 0x00ff, 0x00, "CMPC R%0d, #%1hH",         NULL},
 	{0xf005, 0x0e00, 0x08, 0x00e0, 0x04, "MOV ER%0d, ER%1d",        NULL},
-	{0xe000, 0x0e00, 0x08, 0x00ff, 0x00, "MOV ER%0d, #%1hH",         NULL},
+	{0xe000, 0x0e00, 0x08, 0x00ff, 0x00, "MOV ER%0d, #%1sH",         NULL},
 	{0x8000, 0x0f00, 0x08, 0x00f0, 0x04, "MOV R%0d, R%1d",          NULL},
 	{0x0000, 0x0f00, 0x08, 0x00ff, 0x00, "MOV R%0d, #%1hH",          NULL},
 	{0x8003, 0x0f00, 0x08, 0x00f0, 0x04, "OR R%0d, R%1d",           NULL},
@@ -92,7 +93,7 @@ struct nxu8_instr_mask instrs[] = {
 	{0xa004, 0x0f00, 0x08, 0x0000, 0x00, "MOV R%0d, EPSW",          NULL},
 	{0xa003, 0x0f00, 0x08, 0x0000, 0x00, "MOV R%0d, PSW",           NULL},
 	{0xa10a, 0x00f0, 0x04, 0x0000, 0x00, "MOV SP, ER%0d",           NULL},
-	
+
 	{0xf05e, 0x0e00, 0x08, 0x0000, 0x00, "PUSH ER%0d",              NULL},
 	{0xf07e, 0x0800, 0x08, 0x0000, 0x00, "PUSH QR%0d",              NULL},
 	{0xf04e, 0x0f00, 0x08, 0x0000, 0x00, "PUSH R%0d",               NULL},
@@ -103,7 +104,7 @@ struct nxu8_instr_mask instrs[] = {
 	{0xf00e, 0x0f00, 0x08, 0x0000, 0x00, "POP R%0d",                NULL},
 	{0xf02e, 0x0c00, 0x08, 0x0000, 0x00, "POP XR%0d",               NULL},
 	{0xf08e, 0x0f00, 0x08, 0x0000, 0x00, "POP %0r"},
-	
+
 	{0xa00e, 0x0f00, 0x08, 0x00f0, 0x04, "MOV CR%0d, R%1d",         NULL},
 	{0xf02d, 0x0e00, 0x08, 0x0000, 0x00, "MOV CER%0d, %D[EA]",     NULL},
 	{0xf03d, 0x0e00, 0x08, 0x0000, 0x00, "MOV CER%0d, %D[EA+]",    NULL},
@@ -132,11 +133,11 @@ struct nxu8_instr_mask instrs[] = {
 	{0x805f, 0x0f00, 0x08, 0x0000, 0x00, "NEG R%0d",                NULL},
 
 	{0xa000, 0x0f00, 0x08, 0x0070, 0x04, "SB R%0d.%1d",             NULL},
-	{0xa080, 0x0070, 0x04, 0x0000, 0x00, "SB %2hH.%0d",             NULL},
+	{0xa080, 0x0070, 0x04, 0x0000, 0x00, "SB %D%2hH.%0d",           NULL},
 	{0xa002, 0x0f00, 0x08, 0x0070, 0x04, "RB R%0d.%1d",             NULL},
-	{0xa082, 0x0070, 0x04, 0x0000, 0x00, "RB %2hH.%0d",             NULL},
+	{0xa082, 0x0070, 0x04, 0x0000, 0x00, "RB %D%2hH.%0d",           NULL},
 	{0xa001, 0x0f00, 0x08, 0x0070, 0x04, "TB R%0d.%1d",             NULL},
-	{0xa081, 0x0070, 0x04, 0x0000, 0x00, "TB %2hH.%0d",             NULL},
+	{0xa081, 0x0070, 0x04, 0x0000, 0x00, "TB %D%2hH.%0d",           NULL},
 
 	{0xed08, 0x0000, 0x00, 0x0000, 0x00, "EI",                      NULL},
 	{0xebf7, 0x0000, 0x00, 0x0000, 0x00, "DI",                      NULL},
@@ -165,7 +166,7 @@ struct nxu8_instr_mask instrs[] = {
 
 	{0xe500, 0x003f, 0x00, 0x0000, 0x00, "SWI %1hH",                NULL},
 	{0xffff, 0x0000, 0x00, 0x0000, 0x00, "BRK",                      NULL},
-	
+
 	// TODO: Fix this
 	{0xf000, 0x0f00, 0x08, 0x0000, 0x00, "B %0h:%2hH",              },
 	{0xf002, 0x00f0, 0x04, 0x0000, 0x00, "B ER%d",                  NULL},
@@ -181,6 +182,10 @@ struct nxu8_instr_mask instrs[] = {
 	{0xfe0f, 0x0000, 0x00, 0x0000, 0x00, "RTI",                     NULL},
 	{0xfe8f, 0x0000, 0x00, 0x0000, 0x00, "NOP",                     NULL},
 };
+
+int bit_length(int x) {
+    return floor(log2(x)) + 1;
+}
 
 struct nxu8_instr *nxu8_decode_instr(struct nxu8_decoder *decoder, uint32_t addr) {
 	// Get the instruction word
@@ -231,12 +236,12 @@ struct nxu8_instr *nxu8_decode_instr(struct nxu8_decoder *decoder, uint32_t addr
 						fmt++;
 						switch (*fmt) {
 							case '0': {
-								src_bits = __builtin_clz(instrs[x].arg0_mask) - instrs[x].arg0_shift - 17;
+								src_bits = bit_length(instrs[x].arg0_mask) - instrs[x].arg0_shift;
 								src = (instr_fw & instrs[x].arg0_mask) >> instrs[x].arg0_shift;
 								break;
 							}
 							case '1': {
-								src_bits = __builtin_clz(instrs[x].arg1_mask) - instrs[x].arg1_shift;
+								src_bits = bit_length(instrs[x].arg1_mask) - instrs[x].arg1_shift;
 								src = (instr_fw & instrs[x].arg1_mask) >> instrs[x].arg1_shift;
 								break;
 							}
@@ -270,9 +275,7 @@ struct nxu8_instr *nxu8_decode_instr(struct nxu8_decoder *decoder, uint32_t addr
 							}
 							case 's': {
 								// Sign extend src
-								if (src > 0x9fff) head += sprintf(head, "0");
-								else if (src < 0x100 && src > 0x9f) head += sprintf(head, "0");
-								src |= (src >> src_bits) ? (0xFFFF << src_bits) : 0;
+								src |= (src >> (src_bits - 1)) ? (0xFFF << src_bits) : 0;
 								head += sprintf(head, "%s%02X", src & 0x8000 ? "-" : "", src & 0x8000 ? (src ^ 0xFFFF) + 1 : src);
 								break;
 							}
