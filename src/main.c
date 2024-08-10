@@ -4,6 +4,16 @@
 
 #include "lib/lib_nxu8.h"
 
+struct instr_line {
+	struct label {
+		char *name;
+		bool global;
+		uint32_t parent;
+	};
+	char *ins_str;
+	uint32_t addr;
+};
+
 int main(int argc, char **argv) {
 	// Display usage
 	if (argc != 2) {
