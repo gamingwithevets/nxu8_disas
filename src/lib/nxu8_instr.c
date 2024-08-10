@@ -284,7 +284,7 @@ struct nxu8_instr *nxu8_decode_instr(struct nxu8_decoder *decoder, uint32_t addr
 								break;
 							}
 							case 'D': {
-								if (dsr) head += sprintf(head, "%s:", dsr);
+								if (dsr_len > 0) head += sprintf(head, "%s:", dsr);
 								break;
 							}
 						}

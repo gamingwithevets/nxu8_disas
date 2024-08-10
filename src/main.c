@@ -24,7 +24,7 @@ int main(int argc, char **argv) {
 	struct nxu8_decoder *decoder = nxu8_init_decoder_file(argv[1]);
 
 	uint32_t addr = 0;
-	while (addr <= decoder->buf_sz) {
+	while (addr < decoder->buf_sz) {
 		struct nxu8_instr *instr = nxu8_decode_instr(decoder, addr);
 
 		if (instr != NULL) {
