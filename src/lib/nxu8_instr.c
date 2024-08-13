@@ -280,8 +280,9 @@ struct nxu8_instr *nxu8_decode_instr(struct nxu8_decoder *decoder, uint32_t addr
 								break;
 							}
 							case 'O': {
-								src |= (src >> src_bits) ? (0xFFFF << src_bits) : 0;
+								src |= (src >> src_bits) ? (0xFFF << src_bits) : 0;
 								src <<= 1;
+								if (src & 0x8000) src = (src ^ 0xFFFF) + 1;
 								src += addr + 2;
 								head += sprintf(head, "%X:%04X", src >> 16, src & 0xffff);
 								break;
