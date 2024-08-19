@@ -269,7 +269,7 @@ struct nxu8_instr *nxu8_decode_instr(struct nxu8_decoder *decoder, uint32_t addr
 								break;
 							}
 							case 'h': {
-								if (src > 0x9f) head += sprintf(head, "0");
+								if (src > 9 && src < 0x10 || src > 0x9f) head += sprintf(head, "0");
 								head += sprintf(head, "%X", src);
 								break;
 							}
