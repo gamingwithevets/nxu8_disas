@@ -283,7 +283,7 @@ struct nxu8_instr *nxu8_decode_instr(struct nxu8_decoder *decoder, uint32_t addr
 								src |= (src >> src_bits) ? (0xFFF << src_bits) : 0;
 								signed char srcs = src;
 								srcs *= 2;
-								head += sprintf(head, "%X:%04X", (addr+srcs+2) >> 16, (addr+srcs+2) & 0xffff);
+								head += sprintf(head, "%X:%04X", addr >> 16, (addr+srcs+2) & 0xffff);
 								break;
 							}
 							case 'D': {
