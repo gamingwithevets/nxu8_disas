@@ -270,7 +270,7 @@ struct nxu8_instr *nxu8_decode_instr(struct nxu8_decoder *decoder, uint32_t addr
 							}
 							case 'h': {
 								if (src > 0x9f) head += sprintf(head, "0");
-								head += sprintf(head, "%02X", src);
+								head += sprintf(head, "%X", src);
 								break;
 							}
 							case 's': {
@@ -281,10 +281,9 @@ struct nxu8_instr *nxu8_decode_instr(struct nxu8_decoder *decoder, uint32_t addr
 							}
 							case 'O': {
 								src |= (src >> src_bits) ? (0xFFF << src_bits) : 0;
-								src <<= 1;
-								if (src & 0x8000) src = (src ^ 0xFFFF) + 1;
-								src += addr + 2;
-								head += sprintf(head, "%X:%04X", src >> 16, src & 0xffff);
+								signed char srcs = src;
+								srcs *= 2;
+								head += sprintf(head, "%X:%04X", (addr+srcs+2) >> 16, (addr+srcs+2) & 0xffff);
 								break;
 							}
 							case 'D': {
